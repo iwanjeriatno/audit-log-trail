@@ -6,8 +6,8 @@
 
 namespace App\Libraries;
 
+use DB;
 use App\Models\LogTrail;
-use App\Models\VendorTipe;
 
 class AuditLogTrail
 {
@@ -33,6 +33,17 @@ class AuditLogTrail
                         ]);
     }
 
+    public function log($modul_id, $modul_type, $row)
+    {
+        $log = DB::table('setting_log_trail')
+                    ->where('modul_id', $modul_id)
+                    ->where('modul_type', $modul_type)
+                    ->where('row', $row)
+                    ->get();
+
+        return $log;
+    }
+
     public function model($model)
     {
         $model_name = array_slice(explode('\\', $model), -1, 1);
@@ -50,7 +61,7 @@ class AuditLogTrail
         return json_encode($event_detail);
     }
 
-    public function modul($path)
+    public static function modul($path)
     {
         $path_name = array_slice(explode('/', $path), -1, 1);
         // $link = $path_name[0];
