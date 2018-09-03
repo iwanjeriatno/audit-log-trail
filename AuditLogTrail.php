@@ -1,13 +1,14 @@
 <?php
 
 /**
+* Library Audit Log & Audit Trail
  * audit log : mencatat semua perubahan dalam aplikasi
  */
 
 namespace App\Libraries;
 
 use DB;
-use App\Models\LogTrail;
+use App\Models\Settings\LogTrail;
 
 class AuditLogTrail
 {
@@ -20,11 +21,18 @@ class AuditLogTrail
         $this->table_name = $table_name;
     }
 
-    public function logs($event, $id = NULL)
+    public static function methodName($is)
+    {
+        $method = array_slice(explode('\\', $is), -1, 1);
+        $method_name = explode('::', $method[0]);
+        return $method_name[1];
+    }
+
+    public function logs($id = NULL)
     {
         return LogTrail::create([
                             'model'         => $this->model($this->model_name),
-                            'event'         => $event,
+                            'event'         => $this->methodName(__METHOD__),
                             'event_detail'  => $this->eventJson($this->model($this->table_name), $id),
                             // 'description'   => $desc,
                             'user_id'       => \Auth::user()->id,
